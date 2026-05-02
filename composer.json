@@ -3,10 +3,10 @@
     "name": "eurym3d0n/tailwind-engine",
     "description": "Enterprise-grade PHP 8.3 package for Tailwind CSS 4 class merging, conflict resolution, and sorting.",
     "keywords": [
-    "tailwind",
-    "css",
-    "class-merger",
-    "php"
+        "tailwind",
+        "css",
+        "class-merger",
+        "php"
     ],
     "type": "library",
     "homepage": "https://fox-trotte.fr",

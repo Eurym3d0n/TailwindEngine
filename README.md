@@ -1,6 +1,6 @@
 # TailwindEngine
 
-Enterprise-grade PHP 8.3 package for merging, conflict-resolving, and sorting Tailwind CSS 4 class strings.
+Enterprise-grade PHP 8.5 package for merging, conflict-resolving, and sorting Tailwind CSS 4 class strings.
 
 Replaces ad-hoc string concatenation and `implode()` calls with a typed,
 tested, and extensible pipeline that mirrors the behaviour of the official
