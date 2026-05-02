@@ -1,5 +1,4 @@
 {
-    "version": "1.0.0",
     "name": "eurym3d0n/tailwind-engine",
     "description": "Enterprise-grade PHP 8.3 package for Tailwind CSS 4 class merging, conflict resolution, and sorting.",
     "keywords": [
@@ -49,6 +48,9 @@
             "TailwindEngine\\Tests\\": "tests/"
         }
     },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.2.x-dev"
+        }
+    }
 }
