@@ -41,47 +41,112 @@ final readonly class ClassSorter implements ClassSorterInterface
      */
     private const VARIANT_DEPTH_OFFSET = 10_000;
 
+    /**
+     * Increment applied between two consecutive family weights.
+     */
+    private const FAMILY_WEIGHT_STEP = 10;
+
     public function __construct(
         private FamilyResolver $familyResolver,
         private FamilyRegistry $registry,
     ) {}
 
     /**
-     * @inheritDoc
+     * Sorts the given class tokens in place according to Tailwind family ordering
+     * and variant depth.
+     *
+     * @param array<string> $tokens
+     * @return array<string>
      */
     public function sort(array $tokens): array
     {
-        $keys = array_keys($this->registry->getFamilies());
+        $familyWeights = $this->buildFamilyWeights();
 
         usort(
             $tokens,
-            fn (string $a, string $b): int =>
-                $this->computeWeight($a, $keys) <=> $this->computeWeight($b, $keys),
+            fn (string $left, string $right): int =>
+                $this->computeWeight($left, $familyWeights) <=> $this->computeWeight($right, $familyWeights),
         );
 
         return $tokens;
     }
 
     /**
-     * Computes the numeric sort weight for a class token.
+     * Builds a direct lookup table from family key to numeric weight.
      *
-     * @param string $class The full class token including any variants.
-     * @param array<string> $keys  The ordered list of family keys from the registry.
-     * @return int Numeric sort weight. Lower values sort earlier.
+     * This avoids repeated linear searches during the sorting phase.
+     *
+     * @return array<string, int>
      */
-    private function computeWeight(string $class, array $keys): int
+    private function buildFamilyWeights(): array
     {
-        $parts = explode(':', $class);
-        $base = ltrim(array_pop($parts), '-');
-        $variantDepth = count($parts);
+        $weights = [];
 
-        $familyKey = $this->familyResolver->familyOf($base);
-        $familyIndex = array_search($familyKey, $keys, true);
+        foreach (array_keys($this->registry->getFamilies()) as $index => $familyKey) {
+            $weights[$familyKey] = $index * self::FAMILY_WEIGHT_STEP;
+        }
 
-        $familyWeight = $familyIndex !== false
-            ? (int) $familyIndex * 10
-            : self::UNKNOWN_FAMILY_WEIGHT;
+        return $weights;
+    }
 
-        return $variantDepth * self::VARIANT_DEPTH_OFFSET + $familyWeight;
+    /**
+     * Computes the final sort weight for a class token.
+     *
+     * Lower weights are sorted first.
+     *
+     * @param array<string, int> $familyWeights
+     */
+    private function computeWeight(string $classToken, array $familyWeights): int
+    {
+        $variantDepth = $this->extractVariantDepth($classToken);
+        $familyWeight = $this->resolveFamilyWeight($classToken, $familyWeights);
+
+        return ($variantDepth * self::VARIANT_DEPTH_OFFSET) + $familyWeight;
+    }
+
+    /**
+     * Returns the number of variant prefixes applied to the token.
+     *
+     * Examples:
+     * - "px-4" => 0
+     * - "hover:px-4" => 1
+     * - "md:hover:px-4" => 2
+     */
+    private function extractVariantDepth(string $classToken): int
+    {
+        return substr_count($classToken, ':');
+    }
+
+    /**
+     * Resolves the family weight of the utility part of the class token.
+     *
+     * If the family cannot be found, a fallback weight is returned so that
+     * unknown utilities sink toward the end of the final class string.
+     *
+     * @param array<string, int> $familyWeights
+     */
+    private function resolveFamilyWeight(string $classToken, array $familyWeights): int
+    {
+        $baseUtility = $this->extractBaseUtility($classToken);
+        $familyKey = $this->familyResolver->familyOf($baseUtility);
+
+        return $familyWeights[$familyKey] ?? self::UNKNOWN_FAMILY_WEIGHT;
+    }
+
+    /**
+     * Extracts the raw utility name from a class token by removing variant prefixes
+     * and an optional leading minus sign.
+     *
+     * Examples:
+     * - "px-4" => "px-4"
+     * - "-inset-1" => "inset-1"
+     * - "md:hover:-inset-1" => "inset-1"
+     */
+    private function extractBaseUtility(string $classToken): string
+    {
+        $segments = explode(':', $classToken);
+        $utility = (string) array_pop($segments);
+
+        return ltrim($utility, '-');
     }
 }
