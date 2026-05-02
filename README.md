@@ -18,7 +18,7 @@ Tailwind CSS Prettier plugin.
 ## Installation
 
 ```bash
-composer require eurym3d0n/tailwind-engine
+composer require eurym3d0n/tailwind-engine:dev-main
 ```
 
 ---
