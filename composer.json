@@ -1,0 +1,54 @@
+{
+    "version": "1.0.0",
+    "name": "eurym3d0n/tailwind-engine",
+    "description": "Enterprise-grade PHP 8.3 package for Tailwind CSS 4 class merging, conflict resolution, and sorting.",
+    "keywords": [
+    "tailwind",
+    "css",
+    "class-merger",
+    "php"
+    ],
+    "type": "library",
+    "homepage": "https://fox-trotte.fr",
+    "readme": "README.md",
+    "time": "",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jessy LELIEVRE",
+            "email": "jessylelievre@outlook.fr",
+            "homepage": "https://jessylelievre.fr",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "jessylelievre@outlook.fr",
+        "issues": "https://github.com/eurym3d0n/tailwind-engine/issues",
+        "source": "https://github.com/eurym3d0n/tailwind-engine"
+    },
+    "config": {
+        "lock": false,
+        "process-timeout": 900,
+        "platform-check": true,
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "require": {
+        "php": ">=8.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^13.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "TailwindEngine\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TailwindEngine\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
